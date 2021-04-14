@@ -1,0 +1,4 @@
+base_task:
+  source: cat {{yml_dir}}/aws_subcommands/{{arg1}}
+  options:
+    - reverse
