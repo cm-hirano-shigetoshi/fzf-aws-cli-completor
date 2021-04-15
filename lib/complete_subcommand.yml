@@ -1,4 +1,5 @@
 base_task:
-  source: cat {{yml_dir}}/aws_subcommands/{{arg1}}
+  source: cat {{yml_dir}}/aws_subcommands/aws_*
   options:
     - reverse
+    - query='{{arg1}}'

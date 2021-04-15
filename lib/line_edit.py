@@ -3,7 +3,7 @@ import sys
 import shlex
 import subprocess
 from subprocess import PIPE
-from os.path import dirname
+from os.path import dirname, exists
 
 script_dir = dirname(__file__)
 
@@ -13,7 +13,7 @@ CURSOR = sys.argv[2]
 
 def get_arguments(bear_commands):
     (mandatory, optional, argument) = ([], [], [])
-    with open(script_dir + '/aws_subcommand/' + '_'.join(bear_commands)) as f:
+    with open(script_dir + '/aws_optionals/' + '_'.join(bear_commands)) as f:
         synopsis_area = 0
         for line in f.readlines():
             line = line.strip()
@@ -36,14 +36,12 @@ def get_arguments(bear_commands):
 
 
 def fzf_complete_subcommand(bear_commands):
-    if bear_commands[1] is None:
-        # commandが未確定
-        target = 'aws_*'
-    else:
-        # commandは確定
-        target = 'aws_' + bear_commands[1]
+    if bear_commands[2] is not None and exists('{}/aws_optionals/{}'.format(
+            script_dir, '_'.join(bear_commands))):
+        return bear_commands
+    query = ' '.join(['' if not c else c for c in bear_commands[1:]])
     proc = subprocess.run("fzfyml3 run {}/complete_subcommand.yml '{}'".format(
-        script_dir, target),
+        script_dir, query),
                           shell=True,
                           stdout=PIPE,
                           text=True)
@@ -100,8 +98,8 @@ if bear_commands[0] is None or bear_commands[0] != 'aws':
     # そもそもawsコマンドではない
     # 何も出力せず終了。ZLE自体何もしない
     sys.exit()
-elif bear_commands[0] == 'aws' and bear_commands[2] is None:
-    # aws
+else:
+    # awsコマンドの時
     completed_commands = fzf_complete_subcommand(bear_commands)
     if completed_commands is None:
         # fzfでキャンセルされた場合はZLEは何もしない
