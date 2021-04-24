@@ -13,3 +13,9 @@ for c in $COMMANDS; do
         > $(dirname $0)/../lib/aws_subcommands/aws_$c
 done
 
+for subcommand in $(dirname $0)/../lib/aws_subcommands/aws_*; do
+    cat $subcommand | \
+        sed 's%/%_%' | \
+        sed "s%^%$(dirname $0)/../lib/aws_optionals/aws_%" | \
+        xargs touch
+done
