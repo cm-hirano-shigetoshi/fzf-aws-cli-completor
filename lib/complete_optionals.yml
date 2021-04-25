@@ -3,3 +3,6 @@ base_task:
   options:
     - reverse
     - multi
+    - ansi
+    - preview='python {{yml_dir}}/../tools/show_argument_help.py $(echo {{arg1}} | sed "s/_/ /g") {}'
+

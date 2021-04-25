@@ -63,15 +63,20 @@ def fzf_complete_optionals(bear_commands):
     help_text = show_help(bear_commands)
     (mandatory, optional, argument) = get_arguments(help_text)
 
+    mandatory_candidates = ['[32m{}[0m'.format(m) for m in mandatory]
+    optional_candidates = ['[{}]'.format(o) for o in optional]
+    argument_candidates = ['[34m{}[0m'.format(a) for a in argument]
     proc = subprocess.run(
-        'fzfyml3 run {}/complete_optionals.yml'.format(script_dir),
-        input='\n'.join(optional),
+        'fzfyml3 run {}/complete_optionals.yml {}'.format(
+            script_dir, '_'.join(bear_commands)),
+        input='\n'.join(mandatory_candidates + optional_candidates +
+                        argument_candidates),
         shell=True,
         stdout=PIPE,
         text=True)
     if len(proc.stdout.strip()) == 0:
         return None
-    return mandatory + proc.stdout.strip().split('\n') + argument
+    return unique(mandatory + proc.stdout.strip().split('\n') + argument)
 
 
 def get_baar_commands(buf):
@@ -101,6 +106,19 @@ def get_baar_commands(buf):
     return bear_commands[:3]
 
 
+def unique(ls):
+    return sorted(set(ls), key=ls.index)
+
+
+def extend_selected(output, selected):
+    sp = sum([o.split() for o in output], [])
+    for s in (selected):
+        if s.startswith('['):
+            s = s[1:-1]
+        if s.split()[0] not in sp:
+            output.append(s)
+
+
 # 変更後のバッファを作っていく
 output = [BUFFER.strip()]
 # aws cliの骨子だけを取得する
@@ -128,5 +146,5 @@ selected_optionals = fzf_complete_optionals(bear_commands)
 if selected_optionals is None:
     # fzfでキャンセルされた場合はZLEは何もしない
     sys.exit()
-output.extend(selected_optionals)
+extend_selected(output, selected_optionals)
 print(' '.join(output))
