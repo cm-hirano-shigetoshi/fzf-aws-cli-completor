@@ -75,8 +75,10 @@ def fzf_complete_optionals(bear_commands):
         stdout=PIPE,
         text=True)
     if len(proc.stdout.strip()) == 0:
-        return None
-    return unique(mandatory + proc.stdout.strip().split('\n') + argument)
+        selected = []
+    else:
+        selected = proc.stdout.strip().split('\n')
+    return unique(mandatory + selected + argument)
 
 
 def get_baar_commands(buf):
@@ -143,8 +145,5 @@ else:
 
 # subcommandまで確定後の処理
 selected_optionals = fzf_complete_optionals(bear_commands)
-if selected_optionals is None:
-    # fzfでキャンセルされた場合はZLEは何もしない
-    sys.exit()
 extend_selected(output, selected_optionals)
 print(' '.join(output))
