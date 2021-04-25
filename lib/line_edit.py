@@ -146,4 +146,4 @@ else:
 # subcommandまで確定後の処理
 selected_optionals = fzf_complete_optionals(bear_commands)
 extend_selected(output, selected_optionals)
-print(' '.join(output))
+print(' '.join(output) + ' ')
