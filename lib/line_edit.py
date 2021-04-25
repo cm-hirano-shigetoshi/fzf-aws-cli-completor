@@ -3,7 +3,7 @@ import sys
 import shlex
 import subprocess
 from subprocess import PIPE
-from os.path import dirname, exists
+from os.path import dirname, exists, getsize
 
 script_dir = dirname(__file__)
 
@@ -13,7 +13,12 @@ CURSOR = sys.argv[2]
 
 def get_arguments(bear_commands):
     (mandatory, optional, argument) = ([], [], [])
-    with open(script_dir + '/aws_optionals/' + '_'.join(bear_commands)) as f:
+    optional_path = script_dir + '/aws_optionals/' + '_'.join(bear_commands)
+    if getsize(optional_path) == 0:
+        subprocess.run('{} help | fzf -f ^ --ansi > {}'.format(
+            ' '.join(bear_commands), optional_path),
+                       shell=True)
+    with open(optional_path) as f:
         synopsis_area = 0
         for line in f.readlines():
             line = line.strip()
