@@ -16,6 +16,6 @@ done
 for subcommand in $(dirname $0)/../lib/aws_subcommands/aws_*; do
     cat $subcommand | \
         sed 's%/%_%' | \
-        sed "s%^%$(dirname $0)/../lib/aws_optionals/aws_%" | \
+        sed "s%^%$(dirname $0)/../lib/aws_help/aws_%" | \
         xargs touch
 done

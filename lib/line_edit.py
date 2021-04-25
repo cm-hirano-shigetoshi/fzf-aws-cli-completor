@@ -11,37 +11,39 @@ BUFFER = sys.argv[1]
 CURSOR = sys.argv[2]
 
 
-def get_arguments(bear_commands):
+def show_help(bear_commands):
+    (c1, c2, c3) = tuple(bear_commands)
+    proc = subprocess.run('bash {} {} {} {}'.format(
+        script_dir + '/../tools/show_help.sh', c1, c2, c3),
+                          shell=True,
+                          stdout=PIPE,
+                          text=True)
+    return proc.stdout.rstrip()
+
+def get_arguments(help_text):
     (mandatory, optional, argument) = ([], [], [])
-    optional_path = script_dir + '/aws_optionals/' + '_'.join(bear_commands)
-    if getsize(optional_path) == 0:
-        subprocess.run('{} help | fzf -f ^ --ansi > {}'.format(
-            ' '.join(bear_commands), optional_path),
-                       shell=True)
-    with open(optional_path) as f:
-        synopsis_area = 0
-        for line in f.readlines():
-            line = line.strip()
-            if line.startswith('SYNOPSIS'):
-                synopsis_area = 1
-                continue
-            if synopsis_area == 1:
-                synopsis_area += 1
-                continue
-            if synopsis_area > 1:
-                if len(line) == 0:
-                    break
-                elif line.startswith('--'):
-                    mandatory.append(line)
-                elif line.startswith('[--'):
-                    optional.append(line[1:-1])
-                else:
-                    argument.append(line)
+    synopsis_area = 0
+    for line in help_text.split('\n'):
+        line = line.strip()
+        if line.startswith('SYNOPSIS'):
+            synopsis_area = 1
+            continue
+        if synopsis_area == 1:
+            synopsis_area += 1
+            continue
+        if synopsis_area > 1:
+            if len(line) == 0:
+                break
+            elif line.startswith('--'):
+                mandatory.append(line)
+            elif line.startswith('[--'):
+                optional.append(line[1:-1])
+            else:
+                argument.append(line)
     return (mandatory, optional, argument)
 
-
 def fzf_complete_subcommand(bear_commands):
-    if bear_commands[2] is not None and exists('{}/aws_optionals/{}'.format(
+    if bear_commands[2] is not None and exists('{}/aws_help/{}'.format(
             script_dir, '_'.join(bear_commands))):
         return bear_commands
     query = ' '.join(['' if not c else c for c in bear_commands[1:]])
@@ -56,7 +58,9 @@ def fzf_complete_subcommand(bear_commands):
 
 
 def fzf_complete_optionals(bear_commands):
-    (mandatory, optional, argument) = get_arguments(bear_commands)
+    help_text = show_help(bear_commands)
+    (mandatory, optional, argument) = get_arguments(help_text)
+
     proc = subprocess.run(
         'fzfyml3 run {}/complete_optionals.yml'.format(script_dir),
         input='\n'.join(optional),
