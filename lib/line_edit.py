@@ -110,8 +110,10 @@ else:
         # fzfでキャンセルされた場合はZLEは何もしない
         sys.exit()
     if bear_commands[1] is None:
+        # commandとsubcommandを補完
         output.extend(completed_commands[1:])
-    else:
+    elif bear_commands[2] is None:
+        # subcommandを補完
         output.extend(completed_commands[2:])
     bear_commands = completed_commands
 
