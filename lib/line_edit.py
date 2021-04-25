@@ -3,7 +3,7 @@ import sys
 import shlex
 import subprocess
 from subprocess import PIPE
-from os.path import dirname, exists, getsize
+from os.path import dirname, exists
 
 script_dir = dirname(__file__)
 
@@ -19,6 +19,7 @@ def show_help(bear_commands):
                           stdout=PIPE,
                           text=True)
     return proc.stdout.rstrip()
+
 
 def get_arguments(help_text):
     (mandatory, optional, argument) = ([], [], [])
@@ -41,6 +42,7 @@ def get_arguments(help_text):
             else:
                 argument.append(line)
     return (mandatory, optional, argument)
+
 
 def fzf_complete_subcommand(bear_commands):
     if bear_commands[2] is not None and exists('{}/aws_help/{}'.format(

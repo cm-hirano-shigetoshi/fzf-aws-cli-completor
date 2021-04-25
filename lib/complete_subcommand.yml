@@ -3,3 +3,4 @@ base_task:
   options:
     - reverse
     - query='{{arg1}}'
+    - preview='bash {{yml_dir}}/../tools/show_help.sh aws $(echo {} | sed "s%/% %")'
