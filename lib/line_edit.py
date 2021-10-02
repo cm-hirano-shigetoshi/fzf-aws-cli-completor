@@ -50,7 +50,7 @@ def fzf_complete_subcommand(cmds):
             script_dir, '_'.join(cmds))):
         return cmds
     query = ' '.join(['' if not c else c for c in cmds[1:]])
-    proc = subprocess.run("fzfyml3 run {}/complete_subcommand.yml '{}'".format(
+    proc = subprocess.run("fzfyml4 run {}/complete_subcommand.yml '{}'".format(
         script_dir, query),
                           shell=True,
                           stdout=PIPE,
@@ -68,7 +68,7 @@ def fzf_complete_optionals(cmds):
     optional_candidates = ['[{}]'.format(o) for o in optional]
     argument_candidates = ['[34m{}[0m'.format(a) for a in argument]
     proc = subprocess.run(
-        'fzfyml3 run {}/complete_optionals.yml {}'.format(
+        'fzfyml4 run {}/complete_optionals.yml {}'.format(
             script_dir, '_'.join(cmds)),
         input='\n'.join(mandatory_candidates + optional_candidates +
                         argument_candidates),
