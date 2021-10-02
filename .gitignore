@@ -1,0 +1,5 @@
+lib/aws_subcommands/
+lib/aws_help/
+._zinit/
+*.zsh.zwc
+
