@@ -138,8 +138,8 @@ def get_completed_cmd_list(cmd_list, cmd_indexs, completed_cmds):
         cmd_list[cmd_indexs[1]] = completed_cmds[1]
         cmd_list.append(completed_cmds[2])
     else:
-        cmd_list.append(completed_cmds[0])
         cmd_list.append(completed_cmds[1])
+        cmd_list.append(completed_cmds[2])
     return cmd_list
 
 
